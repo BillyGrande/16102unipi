@@ -1,4 +1,4 @@
-
+import re
 import requests
 s_t= []
 def UserInput():
@@ -45,26 +45,50 @@ recipe = Recipe(result);
 rSearch = s_t[0]
 rTitle = recipe["recipe"]["title"]
 
-ls = rSearch.strip()
-lt = rTitle.strip()
+mystr = 'This is a string, with words!'
+wordList = re.sub("[^\w]", " ",  mystr).split()
+
+ls = wordList = re.sub("[^\w]", " ",  rSearch).split()
+lt = wordList = re.sub("[^\w]", " ",  rTitle).split()
 
 common = FindCommon(ls,lt);
 
-found = []
 fterm = []
-for term in common:
-	list = Beer(term);
-	if list:
-		fterm.append(len(list))
-	else:
-		fterm.append(0)
+if common:
+	for term in common:
+		blist = Beer(term);
+		if blist:
+			fterm.append(len(blist))
+		else:
+			fterm.append(0)
+	status = 1
+else:
+	for term in lt:
+		blist = Beer(term);
+		if blist:
+			fterm.append(len(blist))
+		else:
+			fterm.append(0)
+	status = 2
 
-"""
-Λοιπόν σε αυτό το κομμάτι θα δίνω τις διαθέσιμες λέξεις (απο τις λίστες) στον χρήστη, ώστε να επιλέξει εκέινες (μέχρι 2) που θεωρέι κατάλληλες για την μπύρα του.
-Έπειτα αν δεν βρίσκω από το συνδυασμό αυτών των 2, θα πάιρνω απότελεσμα από την πρωτη πιο σημαντική. Αν δεν υπαρχουν κοινες λεξεις θα του δίνω την δυνατότηα, να 
-επιλέξει από όλες τις λέξεις. Θα διαλέγω την πρώτη μπύρα κάθε φορά. Αν δεν βρίσκω καμια κατάλληλη μπύρα θα προσφέρω την επιλογή για επιλογή τυχαίας ή να δώσει
-αλλη λέξη κλειδί.
+index = fterm.index(max(fterm))
+if status == 1:
+	beers = Beer(common[index])
+else:
+	beers = Beer(lt[index])
 
-"""
+try: 
+	beer = beers[0]
+	name = beer["name"]
+except IndexError:
+	beer = "Δεν βρέθηκε μπύρα για αυτό το φαϊ. Πιες μια amstel"
+	status = 0
+	name = "Δεν βρέθηκε μπύρα για αυτό το φαϊ. Πιες μια amstel :P"
 
-
+print("Μπύρα: " + name)
+print("Συνταγή: " + recipe["recipe"]["title"])
+ing = recipe["recipe"]["ingredients"]
+print("Υλικά:")
+for ingredinet in ing:
+	print(ingredinet)
+print("Url συνταγής: " + recipe["recipe"]["source_url"])
